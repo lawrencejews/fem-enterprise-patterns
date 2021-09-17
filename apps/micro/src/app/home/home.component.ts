@@ -12,23 +12,47 @@ export class HomeComponent {
   mode;
   widgets: Widget[];
 
-  updateWidgetsAndRecalculateCost(widget: Widget) {
-    switch (this.mode) {
+  reCalculateTotal(
+    mode: string,
+    widgets: Widget[],
+    widget: Widget
+  ) {
+    this.widgets = this.updateWidgets(mode, widgets, widget);
+
+    this.price = this.getTotalPrice(widgets);
+  }
+
+  updateWidgets(mode: string, widgets: Widget[], widget: Widget) {
+    switch (mode) {
       case 'create':
-        const newWidget = Object.assign({}, widget, { id: uuidv4() });
-        this.widgets = [...this.widgets, newWidget];
-        break;
+        return this.addWidget(widgets, widget);
       case 'update':
-        this.widgets = this.widgets.map(_widget => widget.id === _widget.id
-          ? Object.assign({}, widget) : _widget);
-        break;
+        return this.updateWidget(widgets, widget);
       case 'delete':
-        this.widgets = this.widgets.filter(_widget => widget.id !== _widget.id);
-        break;
+        return this.deleteWidget(widgets, widget);
       default:
         break;
     }
-    return this.widgets.reduce((acc, curr) => acc + curr.price, 0);
+
   }
 
+  getTotalPrice(widgets) {
+    return widgets.reduce((acc, curr) => acc + curr.price, 0);
+  }
+
+  addWidget(widgets, widget) {
+    const newWidget = Object.assign({}, widget, { id: uuidv4() });
+    return [...widgets, newWidget];
+  }
+
+  updateWidget(widgets, widget) {
+    return widgets.map((_widget) =>
+      widget.id === _widget.id ? Object.assign({}, widget) : _widget
+    );
+  }
+
+  deleteWidget(widgets, widget) {
+    return widgets.filter((_widget) => widget.id !== _widget.id);
+  }
+  
 }

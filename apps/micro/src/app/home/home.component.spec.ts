@@ -121,3 +121,5 @@ describe('HomeComponent', () => {
     expect(total).toBe(600);
   });
 });
+
+
