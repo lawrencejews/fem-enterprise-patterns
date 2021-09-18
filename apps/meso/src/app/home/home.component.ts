@@ -49,29 +49,6 @@ const initialClientsState: ClientsState = {
   currentClient: newClient
 }
 
-//Class 
-class ClientsStore{
-  state: ClientsState;
-
-  constructor(state: ClientsState) {
-    this.state = state;
-  }
-
-  getState() {
-    return this.state;
-  }
-
-  select(key: string) {
-    return this.state[key]
-  }
-}
-
-// class instance
-const clientsStore = new ClientsStore(initialClientsState);
-const currentClients = clientsStore.select('clients');
-const currentClient = clientsStore.select('currentClient');
-// clientsStore.load(clients);
-// clientsStore.select(lawrence)
 
 interface Project extends BaseEntity{
   title: string,
@@ -206,9 +183,8 @@ const deleteClient = (state, client): ClientsState => {
   };
 };
 
-
-
-const clientReducer = (state: ClientsState = initialClientsState, action: Action) => {
+//Class with a reducer.
+const clientsReducer = (state: ClientsState = initialClientsState, action: Action) => {
   switch (action.type) {
     case CLIENT_LOAD: 
       return loadClients(state, action.payload);
@@ -227,8 +203,49 @@ const clientReducer = (state: ClientsState = initialClientsState, action: Action
   }
 }
 
+class ClientsStore{
+  reducer;
+  state: ClientsState;
+
+  constructor(state: ClientsState, reducer) {
+    this.state = state;
+    this.reducer = reducer;
+  }
+
+  getState() {
+    return this.state;
+  }
+
+  select(key: string) {
+    return this.state[key]
+  }
+
+  dispatch(action: Action) {
+    this.state = this.reducer(this.state, action);
+  }
+}
+
+const jane: Client = {
+  id: '123',
+  firstName: 'Jane',
+  lastName: 'Doe',
+  company: 'CrazyBoots'
+}
+
+// class instance
+const clientsStore = new ClientsStore(initialClientsState, clientsReducer);
+const aClient = clientsStore.select('currentClient');
+clientsStore.dispatch({ type: CLIENT_CREATE, payload: jane });
+const allClients = clientsStore.select('clients');
+// const currentClients = clientsStore.select('clients');
+// const currentClient = clientsStore.select('currentClient');
+// clientsStore.load(clients);
+// clientsStore.select(lawrence)
+
+
+
 // Application State
-const tango =  projectsStore //appState;
+const tango =  allClients //projectsStore //appState;
 
 @Component({
   selector: 'fem-home',
