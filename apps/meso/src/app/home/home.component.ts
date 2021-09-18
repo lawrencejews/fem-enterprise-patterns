@@ -162,35 +162,51 @@ const CLIENT_DELETE = '[Client] Delete';
 const CLIENT_SELECT = '[Client] Select';
 const CLIENT_CLEAR = '[Client] Clear'
 
-const loadClients = (state, clients) => {
-  console.log('LOAD CLIENTS!', clients)
-  return state;
+const loadClients = (state, clients): ClientsState => {
+  return {
+    clients,
+    currentClient: state.currentClient
+  }
 }
 
-const createClient = (state, client) => {
-  console.log('CREATE CLIENT!', client);
-  return state;
+const selectClient = (state, client): ClientsState => {
+  return {
+    clients: state.clients,
+    currentClient: client
+  }
 };
 
-const updateClient = (state, client) => {
-  console.log('UPDATE CLIENT!', client);
-  return state;
+const clearClient = (state): ClientsState => {
+  return {
+    clients: state.clients,
+    currentClient: null
+  }
 };
 
-const deleteClient = (state, client) => {
-  console.log('DELETE CLIENTS!', client);
-  return state;
+const createClient = (state, client): ClientsState => {
+  return {
+    clients: [...state.clients, client],
+    currentClient: state.currentClient,
+  };
 };
 
-const selectClient = (state, client) => {
-  console.log('SELECT CLIENT!', client)
-  return state;
+const updateClient = (state, client): ClientsState => {
+ return {
+   clients: state.clients.map((c) => c.id !== client.id),
+   currentClient: state.currentClient,
+ };
 };
 
-const clearClient = (state, client) => {
-  console.log('CLEAR CLIENTS!', client);
-  return state;
+const deleteClient = (state, client): ClientsState => {
+  return {
+    clients: state.clients.filter(c => {
+      return (c.id !== client.id) ? Object.assign({}, client) : c;
+    }),
+    currentClient: state.currentClient,
+  };
 };
+
+
 
 const clientReducer = (state: ClientsState = initialClientsState, action: Action) => {
   switch (action.type) {
@@ -205,7 +221,7 @@ const clientReducer = (state: ClientsState = initialClientsState, action: Action
     case CLIENT_DELETE:
       return deleteClient(state, action.payload);
     case CLIENT_CLEAR:
-      return clearClient(state, action.payload);
+      return clearClient(state);
     default:
       return state;
   }
